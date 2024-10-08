@@ -1,6 +1,6 @@
-**这里面提供的python程序并非完整的，您可能需要去其它地方获取另外的内容来运行这个python程序**
+**该程序提供了来自这里的代码：**
 
-比如这里面的 “python 带上下文调用示例” https://www.xfyun.cn/doc/spark/Web.html#_3-%E8%B0%83%E7%94%A8%E7%A4%BA%E4%BE%8B
+https://www.xfyun.cn/doc/spark/Web.html#_3-%E8%B0%83%E7%94%A8%E7%A4%BA%E4%BE%8B 里面的 “python 带上下文调用示例” 
 
 ## **这个程序创建了**两个类：**认证信息** 和 **星火消息**
 ### 认证性息 ：*用于保存星火接口的认证信息*
@@ -48,8 +48,16 @@
 
     self.新消息 = ""
 #### 调用示例:
+
+    import runSparkAPI
+
+    key = runSparkAPI.认证信息（
+         APPID = ""
+        ,APISecret = ""
+        ,APIKey = ""
+    ）
     
-    abc = 星火消息(key) 
+    abc = runSparkAPI.星火消息(key) 
      # 创建一个星火消息实例,key为上面创建的 认证性息 实例
     abc.更改ai设定("你是一个智能机器人,你叫123465789,正在参与一个测试")
      # 修改AI的设定
