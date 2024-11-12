@@ -1,5 +1,6 @@
 # 1.2.1
-# 使用python3.12编写
+
+from typing import Any
 
 class 认证信息:
     """
@@ -26,7 +27,7 @@ class 认证信息:
 class 星火消息:
     def __init__(
              self
-            ,ID: 认证信息
+            ,key: 认证信息
             ,最大字符长度 = 8000
         ):
         """
@@ -57,11 +58,10 @@ class 星火消息:
         self.设定 = {"role": "system", "content": ""}
         self.历史 = []
         self.新消息 = ""
-        self.ID = ID
+        self.key = key
         self.调用的ai版本(0)         
         self.最大字符长度 = 最大字符长度
         self.自动置历史 = True
-        self.api = SparkAPI(ID, self.Spark_url, self.domain)
     
     def 更改ai设定(self, 内容:str):
         """设置讯飞星火的设定, 填入一段文本作为设定内容"""
@@ -123,7 +123,8 @@ class 星火消息:
 
     def 调用的ai版本(
              self
-            ,版本:int
+            ,版本: int
+            ,maxtokens: int|None=None
         ):
         """
         调用不同的AI版本。该函数接受一个整数参数，代表要调用的AI版本。
@@ -136,23 +137,31 @@ class 星火消息:
                 2 -> Spark Pro\n
                 3 -> Spark Pro-128K\n
                 4 -> Spark Max\n
-                5 -> Spark4.0 Ultra\n
+                5 -> Spark Max-32K\n
+                6 -> Spark4.0 Ultra\n
         
         Returns:
             None:
             无返回值。但会更改对象的Spark_url和domain属性，以使用相应的AI版本。
         """
         所有版本 = (
-            ['wss://spark-api.xf-yun.com/v1.1/chat','general'],       # 0
-            ['wss://spark-api.xf-yun.com/v2.1/chat','generalv2'],     # 1
-            ['wss://spark-api.xf-yun.com/v3.1/chat','generalv3'],     # 2
-            ['wss://spark-api.xf-yun.com/chat/pro-128k','pro-128k'],  # 3
-            ['wss://spark-api.xf-yun.com/v3.5/chat','generalv3.5'],   # 4
-            ['wss://spark-api.xf-yun.com/v4.0/chat','4.0Ultra']       # 5
+             {"url":'wss://spark-api.xf-yun.com/v1.1/chat',     "domain":'general'    ,"max_tokens":4096}
+            ,{"url":'wss://spark-api.xf-yun.com/v2.1/chat',     "domain":'generalv2'  ,"max_tokens":4096}
+            ,{"url":'wss://spark-api.xf-yun.com/v3.1/chat',     "domain":'generalv3'  ,"max_tokens":8192}
+            ,{"url":'wss://spark-api.xf-yun.com/chat/pro-128k', "domain":'pro-128k'   ,"max_tokens":4096}
+            ,{"url":'wss://spark-api.xf-yun.com/v3.5/chat',     "domain":'generalv3.5',"max_tokens":8192}
+            ,{"url":'wss://spark-api.xf-yun.com/chat/max-32k',  "domain":'max-32k'    ,"max_tokens":8192}
+            ,{"url":'wss://spark-api.xf-yun.com/v4.0/chat',     "domain":'4.0Ultra'   ,"max_tokens":8192}
         )
 
-        self.Spark_url =所有版本[版本][0]
-        self.domain = 所有版本[版本][1]
+        self.Spark_url =所有版本[版本]["url"]
+        self.domain = 所有版本[版本]["domain"]
+        if maxtokens is None:
+            max_tokens = 所有版本[版本]["max_tokens"]
+        else:
+            max_tokens = 所有版本[版本]["max_tokens"] if maxtokens > 所有版本[版本]["max_tokens"] else maxtokens
+
+        self.api = SparkAPI(self.key, self.Spark_url, self.domain, max_tokens)
 
     def 自动置历史回复(self,开关:bool):
             self.自动置历史 = 开关
